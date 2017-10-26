@@ -1,11 +1,12 @@
-FROM ubuntu:latest
+FROM microsoft/dotnet
 
 #==========================
 # TODO: Use desired values
 #==========================
-ENV username andrew
+ENV username dev
 ENV password pass
-ENV rootpassword toor
+ENV rootpassword word
+ENV DOTNET_CLI_TELEMETRY_OPTOUT 1
 
 #============
 # Add a user
@@ -29,41 +30,19 @@ RUN apt-get install -y --no-install-recommends apt-utils
 
 #================
 # Basic software
-# build-essential Includes:
-#  - gcc (C language compiler)
-#  - g++ (C++ compiler)
-#  - make
 #================
 RUN apt-get install -y sudo
 RUN apt-get install -y curl
-RUN apt-get install -y build-essential
 RUN apt-get install -y nano
+RUN apt-get install -y htop
 
 #===========================================================================
 # Install Programming Languages. Add or remove languages as desired.
 # Note: C and C++ are installed above and do not need to be listed here.
 #===========================================================================
 
-#=========
-# Python3
-#=========
-RUN apt-get install -y python3 && \
-    apt-get install -y python3-pip
-
-#================
-# Ruby (via RVM)
-#================
-RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB && \
-    \curl -L https://get.rvm.io | bash -s stable --ruby && \
-    adduser $username rvm
-
-#====
-# Go
-#====
-RUN curl -o ./go.linux-amd64.tar.gz https://storage.googleapis.com/golang/go1.9.1.linux-amd64.tar.gz && \
-    tar -C /usr/local -xzf go.linux-amd64.tar.gz && \
-    rm -f go.linux-amd64.tar.gz
-ENV PATH="${PATH}:/usr/local/go/bin"
+#== Init a dotnet core console project
+RUN su -c "dotnet new console -o /home/$username/" $username
 
 #===========================================================================
 # End of Languages section
